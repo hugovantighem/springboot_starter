@@ -1,4 +1,4 @@
-package hello;
+package com;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -25,6 +25,15 @@ public class HelloControllerTest {
     @Test
     public void getHello() throws Exception {
         mvc.perform(MockMvcRequestBuilders.get("/").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(equalTo("Greetings from Spring Boot!")));
+    }
+
+    @Test
+    public void cors() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.get("/")
+                .accept(MediaType.APPLICATION_JSON)
+                .header("Origin", "http://extern.com"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(equalTo("Greetings from Spring Boot!")));
     }
