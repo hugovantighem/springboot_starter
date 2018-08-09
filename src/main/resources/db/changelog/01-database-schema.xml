@@ -7,15 +7,28 @@
    http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet author="hugo" id="20180808">
+    <changeSet author="hugo" id="201808091100">
+        <createTable tableName="USER">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="username" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="accessToken" type="VARCHAR(255)"/>
+            <column name="password" type="VARCHAR(255)"/>
+            <column name="refreshToken" type="VARCHAR(255)"/>
+            <column name="tokenExpiration" type="datetime"/>
+            <column name="email" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="hugo" id="201808091339">
         <createTable tableName="USER_PROFILE">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="accessToken" type="VARCHAR(255)"/>
-            <column name="needCaptcha" type="BIT(1)">
-                <constraints nullable="false"/>
-            </column>
             <column name="password" type="VARCHAR(255)"/>
             <column name="refreshToken" type="VARCHAR(255)"/>
             <column name="tokenExpiration" type="datetime"/>

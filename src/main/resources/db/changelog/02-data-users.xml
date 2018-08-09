@@ -6,7 +6,12 @@
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
    http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <include file="changelog/01-database-schema.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/02-data-users.xml" relativeToChangelogFile="true"/>
+
+    <changeSet author="hugo" id="201808091100">
+        <insert tableName="USER">
+            <column name="username" value="user"/>
+            <column name="password" value="$2a$11$jvFUK35x0C87/HBSzFtPN.VQ1Bgy5TJL5yLwb/C.wpSOCdSLlGenS"/>
+        </insert>
+    </changeSet>
 
 </databaseChangeLog>
