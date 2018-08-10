@@ -1,0 +1,40 @@
+
+
+<html>
+<head>
+    <title>jQuery Hello World</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+
+<script type="text/javascript">
+
+        $(document).ready(function(){
+
+            $.ajax({
+
+                url : 'http://localhost:8080/login',
+                type : 'POST',
+                data : "username=user&password=test",
+                dataType: "text",
+                success : function(data) {
+                    console.log("Response 200");
+                    alert("Response 200");
+                },
+                error : function(request,error)
+                {
+                    console.log(request);
+                    alert('Error: ' + error);
+                }
+            });
+        });
+
+        </script>
+
+Test cors request to 'http://localhost:8080/login'
+
+</body>
+</html>
