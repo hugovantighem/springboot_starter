@@ -1,4 +1,4 @@
-package com.security;
+package com.controller;
 
 import com.authentication.jwt.JwtTokenProvider;
 import com.helper.SecurityHelper;
