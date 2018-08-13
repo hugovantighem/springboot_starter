@@ -1,48 +1,16 @@
 package com.controller;
 
-import com.authentication.jwt.JwtTokenProvider;
 import com.controller.helper.SecurityHelper;
 import com.controller.helper.UserHelper;
-import com.settings.JwtSettings;
 import org.hamcrest.CoreMatchers;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.MultiValueMap;
-
-import java.net.URL;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class SecurityIT {
-
-    @LocalServerPort
-    private int port;
-
-    private URL base;
-
-    @Autowired
-    private TestRestTemplate template;
-
-    @Autowired
-    private JwtSettings settings;
-
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
-
-    @Before
-    public void setUp() throws Exception {
-        this.base = new URL("http://localhost:" + port + "/");
-    }
+public class SecurityIT extends ControllerIT{
 
     @Test
     public void givenWrongAuthorizationHeader_whenRequest_thenRedirectedToLogin() throws Exception {

@@ -1,6 +1,6 @@
-package com.persistence;
+package com.dal.persistence;
 
-import com.model.User;
+import com.business.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Long> {

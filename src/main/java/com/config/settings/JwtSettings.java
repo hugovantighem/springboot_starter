@@ -1,4 +1,4 @@
-package com.settings;
+package com.config.settings;
 
 import lombok.Getter;
 import lombok.Setter;

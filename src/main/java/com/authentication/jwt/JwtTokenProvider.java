@@ -1,7 +1,7 @@
 package com.authentication.jwt;
 
 import com.authentication.CustomUserPrincipal;
-import com.settings.JwtSettings;
+import com.config.settings.JwtSettings;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -49,12 +50,12 @@ public class JwtTokenProvider {
                 .setIssuedAt(issuedAt)
                 .setExpiration(expirationDate)
                 .claim("roles", roles)
-                .signWith(SignatureAlgorithm.forName(settings.getAlg()), settings.getSecret().getBytes("UTF-8"))
+                .signWith(SignatureAlgorithm.forName(settings.getAlg()), settings.getSecret().getBytes(StandardCharsets.UTF_8))
                 .compact();
     }
     public boolean validateToken(String authToken) {
         try {
-            Jwts.parser().setSigningKey(settings.getSecret().getBytes("UTF-8")).parseClaimsJws(authToken);
+            Jwts.parser().setSigningKey(settings.getSecret().getBytes(StandardCharsets.UTF_8)).parseClaimsJws(authToken);
             return true;
         } catch (SignatureException ex) {
             log.error("Invalid JWT signature");
@@ -66,15 +67,13 @@ public class JwtTokenProvider {
             log.error("Unsupported JWT token");
         } catch (IllegalArgumentException ex) {
             log.error("JWT claims string is empty.");
-        } catch (UnsupportedEncodingException e) {
-            log.error("UnsupportedEncodingException.");
         }
         return false;
     }
 
     public String getUsernameFromJWT(String jwt) throws UnsupportedEncodingException {
         Claims claims = Jwts.parser()
-                .setSigningKey(settings.getSecret().getBytes("UTF-8"))
+                .setSigningKey(settings.getSecret().getBytes(StandardCharsets.UTF_8))
                 .parseClaimsJws(jwt).getBody();
         return claims.getSubject();
     }

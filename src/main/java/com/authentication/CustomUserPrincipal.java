@@ -1,6 +1,6 @@
 package com.authentication;
 
-import com.model.User;
+import com.business.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;

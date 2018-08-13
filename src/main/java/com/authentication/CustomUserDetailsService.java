@@ -1,7 +1,7 @@
 package com.authentication;
 
-import com.model.User;
-import com.persistence.UserRepository;
+import com.business.model.User;
+import com.dal.persistence.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
