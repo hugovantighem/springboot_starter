@@ -23,7 +23,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
-    private JwtTokenProvider tokenProvider;
+    private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
@@ -31,13 +31,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if (log.isDebugEnabled()){
-            log.debug("{} {}", JwtTokenProvider.AUTHORIZATION, request.getHeader(JwtTokenProvider.AUTHORIZATION));
+            log.debug("{} {}", jwtTokenProvider.headerKey(), request.getHeader(jwtTokenProvider.headerKey()));
         }
         try {
             String jwt = getJwtFromRequest(request);
 
-            if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-                String username = tokenProvider.getUsernameFromJWT(jwt);
+            if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
+                String username = jwtTokenProvider.getUsernameFromJWT(jwt);
 
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -53,7 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader(JwtTokenProvider.AUTHORIZATION);
-        return JwtTokenProvider.extractJwt(bearerToken);
+        String bearerToken = request.getHeader(jwtTokenProvider.headerKey());
+        return jwtTokenProvider.extractJwt(bearerToken);
     }
 }

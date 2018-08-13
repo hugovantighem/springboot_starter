@@ -29,7 +29,7 @@ public class CustomLoginSuccessfulHandler implements AuthenticationSuccessHandle
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
-        response.addHeader(JwtTokenProvider.AUTHORIZATION, jwtTokenProvider.authorizationToken(jwt));
+        response.addHeader(jwtTokenProvider.headerKey(), jwtTokenProvider.authorizationToken(jwt));
 
         response.setStatus(HttpStatus.OK.value());
     }

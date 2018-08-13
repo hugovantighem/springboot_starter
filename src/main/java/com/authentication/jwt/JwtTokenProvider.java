@@ -1,8 +1,10 @@
 package com.authentication.jwt;
 
 import com.authentication.CustomUserPrincipal;
+import com.settings.JwtSettings;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,17 +22,12 @@ import java.util.stream.Collectors;
 public class JwtTokenProvider {
 
 
-    // TODO externalize
-    private static final SignatureAlgorithm alg = SignatureAlgorithm.HS256;
-    public static final String SECRET = "secret";
-    private int jwtExpirationInMinutes = 10080; // 7 days
-    public static final String AUTHORIZATION = "Authorization";
-    public static final String TOKEN_TYPE = "Bearer";
-    public static final String AUTH_SERVICE_JWT = "auth-service-jwt";
+    @Autowired
+    private JwtSettings settings;
 
-    public static String extractJwt(String bearerToken) {
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(JwtTokenProvider.TOKEN_TYPE)) {
-            return bearerToken.substring(JwtTokenProvider.TOKEN_TYPE.length() + 1);
+    public String extractJwt(String bearerToken) {
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(settings.getTokenType())) {
+            return bearerToken.substring(settings.getTokenType().length() + 1);
         }
         return null;
     }
@@ -43,21 +40,21 @@ public class JwtTokenProvider {
 
         LocalDateTime now = LocalDateTime.now();
         Date issuedAt = Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
-        LocalDateTime ldt = now.plusMinutes(jwtExpirationInMinutes);
+        LocalDateTime ldt = now.plusMinutes(settings.getJwtExpirationInMinutes());
         Date expirationDate = Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
 
         return Jwts.builder()
                 .setSubject(userPrincipal.getUsername())
-                .setIssuer(AUTH_SERVICE_JWT)
+                .setIssuer(settings.getAuthServiceJwt())
                 .setIssuedAt(issuedAt)
                 .setExpiration(expirationDate)
                 .claim("roles", roles)
-                .signWith(alg, SECRET.getBytes("UTF-8"))
+                .signWith(SignatureAlgorithm.forName(settings.getAlg()), settings.getSecret().getBytes("UTF-8"))
                 .compact();
     }
     public boolean validateToken(String authToken) {
         try {
-            Jwts.parser().setSigningKey(SECRET.getBytes("UTF-8")).parseClaimsJws(authToken);
+            Jwts.parser().setSigningKey(settings.getSecret().getBytes("UTF-8")).parseClaimsJws(authToken);
             return true;
         } catch (SignatureException ex) {
             log.error("Invalid JWT signature");
@@ -77,7 +74,7 @@ public class JwtTokenProvider {
 
     public String getUsernameFromJWT(String jwt) throws UnsupportedEncodingException {
         Claims claims = Jwts.parser()
-                .setSigningKey(SECRET.getBytes("UTF-8"))
+                .setSigningKey(settings.getSecret().getBytes("UTF-8"))
                 .parseClaimsJws(jwt).getBody();
         return claims.getSubject();
     }
@@ -85,7 +82,11 @@ public class JwtTokenProvider {
         return String.join(",", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
     }
 
-    public static String authorizationToken(String jwt) {
-        return TOKEN_TYPE + " " + jwt;
+    public String authorizationToken(String jwt) {
+        return settings.getTokenType() + " " + jwt;
+    }
+
+    public String headerKey() {
+        return settings.getAuthorization();
     }
 }

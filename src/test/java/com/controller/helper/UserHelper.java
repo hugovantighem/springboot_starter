@@ -1,4 +1,4 @@
-package com.helper;
+package com.controller.helper;
 
 public class UserHelper {
     public static final String EXISTING_USERNAME = "user";

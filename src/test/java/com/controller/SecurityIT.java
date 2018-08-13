@@ -1,8 +1,9 @@
 package com.controller;
 
 import com.authentication.jwt.JwtTokenProvider;
-import com.helper.SecurityHelper;
-import com.helper.UserHelper;
+import com.controller.helper.SecurityHelper;
+import com.controller.helper.UserHelper;
+import com.settings.JwtSettings;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +33,12 @@ public class SecurityIT {
     @Autowired
     private TestRestTemplate template;
 
+    @Autowired
+    private JwtSettings settings;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
     @Before
     public void setUp() throws Exception {
         this.base = new URL("http://localhost:" + port + "/");
@@ -41,7 +48,7 @@ public class SecurityIT {
     public void givenWrongAuthorizationHeader_whenRequest_thenRedirectedToLogin() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set(JwtTokenProvider.AUTHORIZATION, MediaType.APPLICATION_JSON_VALUE);
+        headers.set(jwtTokenProvider.headerKey(), MediaType.APPLICATION_JSON_VALUE);
 
         ResponseEntity<String> response = template
                 .exchange(base.toString() + "/api/ping",
@@ -70,7 +77,7 @@ public class SecurityIT {
         String authorization = extractAuthorization(response);
 
         assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
-        assertThat(authorization, CoreMatchers.startsWith(JwtTokenProvider.TOKEN_TYPE));
+        assertThat(authorization, CoreMatchers.startsWith(settings.getTokenType()));
     }
 
     @Test
@@ -90,17 +97,17 @@ public class SecurityIT {
     }
 
     private String extractAuthorization(ResponseEntity<String> response){
-        return response.getHeaders().get(JwtTokenProvider.AUTHORIZATION).get(0);
+        return response.getHeaders().get(jwtTokenProvider.headerKey()).get(0);
     }
 
     private String extractJwt(ResponseEntity<String> response){
-        return JwtTokenProvider.extractJwt(response.getHeaders().get(JwtTokenProvider.AUTHORIZATION).get(0));
+        return jwtTokenProvider.extractJwt(response.getHeaders().get(jwtTokenProvider.headerKey()).get(0));
     }
 
     private ResponseEntity<String> processPing(String token){
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set(JwtTokenProvider.AUTHORIZATION, JwtTokenProvider.authorizationToken(token));
+        headers.set(jwtTokenProvider.headerKey(), jwtTokenProvider.authorizationToken(token));
 
         return template
                 .exchange(base.toString() + "/api/ping",

@@ -23,7 +23,7 @@ authentication:
   jwt:
     alg: HS256
     secret: secret
-    # 7 days
+    # 10080 => 7 days
     jwtExpirationInMinutes: 10080
     authorization: Authorization
     tokenType: Bearer
